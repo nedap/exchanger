@@ -4,7 +4,7 @@ module Exchanger
   # http://msdn.microsoft.com/en-us/library/aa494212(v=exchg.80)
   class GetUserAvailability < Operation
     class Request < Operation::Request
-      attr_accessor :time_zone, :email_address, :start_time, :end_time
+      attr_accessor :time_zone, :email_address, :start_time, :end_time, :merged_free_busy_interval_in_minutes
 
       # Reset request options to defaults.
       def reset
@@ -12,6 +12,7 @@ module Exchanger
         @email_address = 'test.test@test.com'
         @start_time = Date.today.to_time + 1
         @end_time = (Date.today + 1).to_time - 1
+        @merged_free_busy_interval_in_minutes = 60
       end
 
       def time_zone_period
@@ -69,7 +70,7 @@ module Exchanger
                      xml.send("t:StartTime", start_date_time)
                      xml.send("t:EndTime", end_date_time)
                    end
-                   xml.send("t:MergedFreeBusyIntervalInMinutes", 60)
+                   xml.send("t:MergedFreeBusyIntervalInMinutes", merged_free_busy_interval_in_minutes)
                    xml.send("t:RequestedView", "DetailedMerged")
                  end
                end
