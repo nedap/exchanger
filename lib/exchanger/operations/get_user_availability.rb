@@ -3,6 +3,12 @@ module Exchanger
   # 
   # http://msdn.microsoft.com/en-us/library/aa494212(v=exchg.80)
   class GetUserAvailability < Operation
+    FREE = 0
+    TENTATIVE = 1
+    BUSY = 2
+    OUT_OF_OFFICE = 3
+    NO_DATA = 4
+    
     class Request < Operation::Request
       attr_accessor :time_zone, :email_address, :start_time, :end_time, :merged_free_busy_interval_in_minutes
 
@@ -81,6 +87,23 @@ module Exchanger
     end
 
     class Response < Operation::Response
+      def merged_free_busy
+        to_xml.xpath(".//t:MergedFreeBusy", NS).text.split.map do |code|
+          case code
+          when "0"
+            GetUserAvailability::FREE
+          when "1"
+            GetUserAvailability::TENTATIVE
+          when "2"
+            GetUserAvailability::BUSY
+          when "3"
+            GetUserAvailability::OUT_OF_OFFICE
+          when "4"
+            GetUserAvailability::NO_DATA
+          end
+        end
+      end
+    
       def items
         to_xml.xpath(".//t:CalendarEventArray", NS).children.map do |node|
           item_klass = Exchanger.const_get(node.name)
