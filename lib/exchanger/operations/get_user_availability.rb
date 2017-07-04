@@ -88,7 +88,7 @@ module Exchanger
 
     class Response < Operation::Response
       def merged_free_busy
-        to_xml.xpath(".//t:MergedFreeBusy", NS).text.split.map do |code|
+        to_xml.xpath(".//t:MergedFreeBusy", NS).text.split("").map do |code|
           case code
           when "0"
             GetUserAvailability::FREE
